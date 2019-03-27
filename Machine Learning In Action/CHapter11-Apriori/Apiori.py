@@ -18,11 +18,11 @@ def createC1(dataSet):
     C1 = []     # 存储大小为1的项的集合
     for transaction in dataSet:     #依次循环
         for item in transaction:      # 寻找不重复的大小为1的项
-            if item not in C1:
+            if [item] not in C1:
                 C1.append([item])
 
     C1.sort()      # 对集合进行排序,数字就是
-    return map(frozenset, C1)   # 将list转成frozenset类型,便于处理
+    return list(map(frozenset, C1))   # 将list转成frozenset类型,便于处理
 
 def scanD(D, Ck, minSupport):
     """
@@ -37,11 +37,12 @@ def scanD(D, Ck, minSupport):
     for tid in D:   # 遍历数据
         for can in Ck:      # 遍历Ck的所有候选值
             # 字典键值为Ck,统计出现的次数,
-           if can not in ssCnt:
-               ssCnt[can] = 1
-            # 未出现则赋1,出现则累加
-           else:
-               ssCnt[can] += 1
+           if not can.difference(set(tid)):
+               if can not in ssCnt:
+                   ssCnt[can] = 1
+                # 未出现则赋1,出现则累加
+               else:
+                   ssCnt[can] += 1
     # 总的数据集个数
     D = list(D)
     numItems = float(len(D))
@@ -63,7 +64,8 @@ def aprioriGen(Lk, k):
         for j in range(i+1, lenLk):
             L1 = list(Lk[i])[:k-2]
             L2 = list(Lk[j])[:k-2]
-            L1.sort();L2.sort()
+            L1.sort()
+            L2.sort()
             if L1 == L2:
                 retList.append(Lk[i]|Lk[j])
     return retList
